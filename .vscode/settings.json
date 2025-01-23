@@ -1,0 +1,12 @@
+{
+    "C_Cpp.intelliSenseEngine": "default",
+    "idf.espIdfPathWin": "c:\\Users\\mikel\\esp-adf\\esp-idf",
+    "idf.openOcdConfigs": [
+        "board/esp32s3-builtin.cfg"
+    ],
+    "idf.portWin": "COM4",
+    "idf.toolsPathWin": "C:\\Users\\mikel\\.espressif",
+    "files.associations": {
+        "rmt_tx.h": "c"
+    }
+}
