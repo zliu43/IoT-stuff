@@ -28,6 +28,13 @@ void setLED(uint8_t led_num, uint8_t red, uint8_t green, uint8_t blue);
  * Uses the ESP32 RMT peripheral to send the stored color data to the LEDs.
  * This function must be called after `setLED()` to apply changes.
  */
-void writeLED();
+void writeLEDs();
 
-#endif // ML_LEDDRIVER_H
+/**
+ * @brief Transmits the color buffer to the WS2812 LED strip.
+ *
+ * Uses the ESP32 RMT peripheral to send the stored color data to the LEDs.
+ * This function must be called after `setLED()` to apply changes.
+ */
+void clearLEDs();
+#endif 
