@@ -29,9 +29,6 @@ static rmt_encoder_handle_t ws2812_encoder = NULL;
 // LED Data Buffer (GRB format)
 static uint8_t rgb_data[NUM_LEDS * 3] = {0};
 
-//mutex for rgb_data
-static SemaphoreHandle_t led_mutex = NULL;
-
 // Transmission Configuration
 static rmt_transmit_config_t tx_cfg = {
 	.loop_count = 0
@@ -68,9 +65,7 @@ void ws2812_init() {
 		.mem_block_symbols = 64,    
 		.trans_queue_depth = 1
 	};
-
-	led_mutex = xSemaphoreCreateMutex();
-
+	
 	ESP_ERROR_CHECK(rmt_new_tx_channel(&tx_config, &rmt_channel));
 	ESP_ERROR_CHECK(rmt_enable(rmt_channel));
 
@@ -95,12 +90,10 @@ void setLED(uint8_t led_num, uint8_t red, uint8_t green, uint8_t blue) {
 		return;  // Prevent buffer overflow
 	}
 
-	xSemaphoreTake(led_mutex, portMAX_DELAY);
-    int index = led_num * 3;
-    rgb_data[index] = green;
-    rgb_data[index + 1] = red;
-    rgb_data[index + 2] = blue;
-    xSemaphoreGive(led_mutex);
+	int index = led_num * 3;
+	rgb_data[index] = green;  //GREEN -> RED -> BLUE
+	rgb_data[index + 1] = red;
+	rgb_data[index + 2] = blue;
 }
 
 /**
@@ -115,22 +108,18 @@ void writeLEDs() {
 		return;  // Prevent crash if encoder isn't initialized
 	}
 
-	xSemaphoreTake(led_mutex, portMAX_DELAY);
-    ESP_ERROR_CHECK(rmt_transmit(rmt_channel, ws2812_encoder, rgb_data, NUM_LEDS * 3, &tx_cfg));
-    xSemaphoreGive(led_mutex);
-
+	ESP_ERROR_CHECK(rmt_transmit(rmt_channel, ws2812_encoder, rgb_data, NUM_LEDS * 3, &tx_cfg));
 }
 
-/**
- * @brief Turns all lights off on the LED strip
- *
- * This function does not immediately update the LED strip; call `writeLED()`
- * to push the data to the LEDs.
- */
-void clearLEDs() {
-	xSemaphoreTake(led_mutex, portMAX_DELAY);
-	for(int i = 0; i < NUM_LEDS * 3; ++i){
-		rgb_data[i] = 0b00000000;
+void setLEDs(){
+	return;
+}
+
+void clearLEDs(){
+	for(int i = 0; i < NUM_LEDS; ++i){
+		int index = i * 3;
+		rgb_data[index] = 0b00000000;  
+		rgb_data[index + 1] = 0b00000000;
+		rgb_data[index + 2] = 0b00000000;
 	}
-	xSemaphoreGive(led_mutex);
 }

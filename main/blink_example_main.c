@@ -10,6 +10,7 @@ led_strip_handle_t strip = NULL;
 
 void app_main() {
     ws2812_init();
+    adc_init();
     while(1){
         button_t button = read_buttons();
         switch(button){
@@ -36,7 +37,8 @@ void app_main() {
             default:
                 break;
             
-            writeLEDs();
         }
+    writeLEDs();
+    vTaskDelay(pdMS_TO_TICKS(100)); 
     }
 }
